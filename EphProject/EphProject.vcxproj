@@ -164,7 +164,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="adds\GLAD\src\glad.c" />
+    <ClCompile Include="src\core\Log.cpp" />
     <ClCompile Include="src\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\core\Log.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
