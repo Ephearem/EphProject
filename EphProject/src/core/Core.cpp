@@ -104,6 +104,50 @@ void Core::init_window(char const* window_title, glm::ivec2 const& window_size,
 
 
 /**----------------------------------------------------------------------------
+; @func start_main_loop
+;
+; @brief
+;   Runs the render loop. Each iteration of the render loop clears the screen,
+;   calls a custom function (to draw/compute logic, etc.), and swaps the front
+;   and back buffers. After exiting the render loop, the GLFW windows will be
+;   destroyed, the allocated resources will be freed.
+;
+; @params
+;   main_loop_iteration_func
+;
+; @return
+;   None
+;
+; // TODO: Sync, calc FPS.
+; // TODO: This function should only start the loop. So, move initialization
+;          'main_loop_iteration_func_' to another function and add
+;          is-main-loop-iteration-func-nullptr check before starting the loop.
+;
+----------------------------------------------------------------------------**/
+void Core::start_main_loop(void(*main_loop_iteration_func)())
+{
+    this->main_loop_iteration_func_ = main_loop_iteration_func;
+
+    while (!glfwWindowShouldClose(this->window_ptr_))
+    {
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+                                        /* Specify clear values for the      */
+                                        /* color buffer                      */
+        glClear(GL_COLOR_BUFFER_BIT);   /* Clear the 'GL_COLOR_BUFFER_BIT'   */
+                                        /* buffer using the selected color   */
+
+        main_loop_iteration_func();     /* Call a custom callback            */
+
+        glfwSwapBuffers(this->window_ptr_);
+                                        /* Swap the front and back buffers   */
+        glfwPollEvents();               /* Process all pending events        */
+    }
+    glfwTerminate();                    /* Destroy all windows, free         */
+                                        /* allocated resources               */
+}
+
+
+/**----------------------------------------------------------------------------
 ; @func get_window_ptr
 ;
 ; @brief
@@ -136,6 +180,6 @@ GLFWwindow* Core::get_window_ptr() const
 ;
 ----------------------------------------------------------------------------**/
 Core::Core()
-    :window_ptr_(nullptr), window_size_(0)
+    :window_ptr_(nullptr), window_size_(0), main_loop_iteration_func_(nullptr)
 {
 }
