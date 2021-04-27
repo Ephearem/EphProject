@@ -34,7 +34,8 @@
 ;   fragment_shader_source  | Zero-terminated fragment shader source string.
 ;
 ----------------------------------------------------------------------------**/
-Shader::Shader(const char* vertex_shader_source, const char* fragment_shader_source)
+Shader::Shader(const char* vertex_shader_source,
+    const char* fragment_shader_source)
 {
     unsigned int vertex_shader = 0;
     unsigned int fragment_shader = 0;
@@ -252,7 +253,9 @@ void Shader::set_ivec2(std::string const& name, const glm::ivec2& ivec2) const
 ----------------------------------------------------------------------------**/
 void Shader::set_vec4(std::string const& name, const glm::vec4& vec4) const
 {
-    glUniform4f(this->get_uniform_location(name), vec4.x, vec4.y, vec4.z, vec4.w);
+    // TODO: use glUniform4f
+    glUniform4f(this->get_uniform_location(name), vec4.x, vec4.y, vec4.z,
+        vec4.w);
 }
 
 
@@ -273,7 +276,8 @@ void Shader::set_vec4(std::string const& name, const glm::vec4& vec4) const
 ----------------------------------------------------------------------------**/
 void Shader::set_mat4(std::string const& name, const glm::mat4& matrix) const
 {
-    glUniformMatrix4fv(this->get_uniform_location(name), 1, GL_FALSE, glm::value_ptr(matrix));
+    glUniformMatrix4fv(this->get_uniform_location(name), 1, GL_FALSE,
+        glm::value_ptr(matrix));
 }
 
 
