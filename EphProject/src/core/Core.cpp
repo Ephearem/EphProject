@@ -207,20 +207,117 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
 {
     this->main_loop_iteration_func_ = main_loop_iteration_func;
 
+    // TODO: The code between this and the next 'TODO' is for testing the
+    //       developed functionality. During development, the logic described
+    //       below will be moved into separate methods of the 'Core' class and
+    //       called outside of the methods of this class.
+    // TEMPORARY CODE START
+
+    float vertices[] =                  /* Set up vertices and indices data  */
+    {
+         0.5f,  0.5f,                   /* Top right                         */
+         0.5f, -0.5f,                   /* Bottom right                      */
+        -0.5f, -0.5f,                   /* Bottom left                       */
+        -0.5f,  0.5f,                   /* Top left                          */
+    };
+    unsigned int indices[] =
+    {
+        0, 1, 3,                        /* The 1-st triangle                 */
+        1, 2, 3                         /* The 2-nd triangle                 */
+    };
+    unsigned int vertex_buffer = 0;
+    unsigned int indices_buffer = 0;
+    unsigned int vertex_array = 0;
+
+    glGenVertexArrays(1, &vertex_array);/* Generate a verex array object     */
+    glGenBuffers(1, &vertex_buffer);    /* Generate a buffer object to store */
+                                        /* the positions of the vertices     */
+    glGenBuffers(1, &indices_buffer);   /* Generate a buffer object to store */
+                                        /* the vertex indices                */
+    glBindVertexArray(vertex_array);    /* Set 'vertex_array' as the current */
+                                        /* vertex array object.              */
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+                                        /* Bind 'vertex_buffer' to           */
+                                        /* GL_ARRAY_BUFFER. All following    */
+                                        /* calls to GL_ARRAY_BUFFER will     */
+                                        /* refer to this 'vertex_buffer'     */
+                                        /* object.                           */
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+                                        /* Put data from 'vertices' into     */
+                                        /* GL_ARRAY_BUFFER (i.e. into        */
+                                        /* 'vertex_buffer')                  */
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices_buffer);
+                                        /* Bind 'vertex_buffer' to           */
+                                        /* GL_ELEMENT_ARRAY_BUFFER. All      */
+                                        /* following calls to                */
+                                        /* GL_ELEMENT_ARRAY_BUFFER will refer*/
+                                        /* to this 'indices_buffer' object.  */
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+        GL_STATIC_DRAW);                /* Put data from 'indices' into      */
+                                        /* GL_ELEMENT_ARRAY_BUFFER (i.e.     */
+                                        /* into 'indices_buffer')            */
+    glBindVertexBuffer(0, vertex_buffer, 0, sizeof(GLfloat) * 2);
+                                        /* Bind 'vertex_buffer' to           */
+                                        /* 'vertex_array' at index 0.        */
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);   /* 'vertex_buffer' can be safely     */
+                                        /* unbind since it is bound to       */
+                                        /* 'vertex_array' as the vertex      */
+                                        /* attribute at index 0.             */
+
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+                                        /* 'indices_buffer' cannot be        */
+                                        /* unbound from 'vertex_array' while */
+                                        /* 'vertex_array' is active          */
+
+    glBindVertexArray(0);               /* Unbind 'vertex_array' so that     */
+                                        /* other calls to the vertex array   */
+                                        /* will not change the current       */
+                                        /* ('vertex_array') object.          */
+    glBindVertexArray(vertex_array);
+
+
+    // TODO: TEMPORARY CODE END
+
+
     while (!glfwWindowShouldClose(this->window_ptr_))
     {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        /* Specify clear values for the      */
-        /* color buffer                      */
+                                        /* Specify clear values for the      */
+                                        /* color buffer                      */
         glClear(GL_COLOR_BUFFER_BIT);   /* Clear the 'GL_COLOR_BUFFER_BIT'   */
                                         /* buffer using the selected color   */
+
+
+        // TODO: The code between this and the next 'TODO' is for testing the
+        //       developed functionality. During development, the logic
+        //       described below will be moved into separate methods of the
+        //       'Core' class and called inside the user-defined function
+        //       'main_loop_iteration_func'.
+        // TEMPORARY CODE START
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        // TODO: TEMPORARY CODE END
+
 
         main_loop_iteration_func();     /* Call a custom callback            */
 
         glfwSwapBuffers(this->window_ptr_);
-        /* Swap the front and back buffers   */
+                                        /* Swap the front and back buffers   */
         glfwPollEvents();               /* Process all pending events        */
     }
+    // TODO: The code between this and the next 'TODO' is for testing the
+    //       developed functionality.
+
+    // TEMPORARY CODE START
+                                        /* De-allocate all resources         */
+    glDeleteVertexArrays(1, &vertex_array);
+    glDeleteBuffers(1, &vertex_buffer);
+    glDeleteBuffers(1, &indices_buffer);
+    // TODO: TEMPORARY CODE END
+
     glfwTerminate();                    /* Destroy all windows, free         */
                                         /* allocated resources               */
 }
