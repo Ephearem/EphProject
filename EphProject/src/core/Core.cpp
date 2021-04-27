@@ -113,10 +113,10 @@ void Core::init_window(char const* window_title, glm::ivec2 const& window_size,
 ;   Reads the contents of the vertex and fragment shader files and passes it to
 ;   the constructor of the 'Shader' class. Binds the created shader.
 ;   For more details, see the description of the 'Shader' class constructor.
-; 
+;
 ; @params
-;   vertex_shader_file_path   | Zero-terminated vertex shader source string.
-;   fragment_shader_file_path | Zero-terminated fragment shader source string.
+;   vertex_shader_file_path   | The path to the vertex shader source file.
+;   fragment_shader_file_path | The path to the fragment shader source file.
 ;
 ; @return
 ;   None
@@ -328,7 +328,7 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
 ;
 ; @brief
 ;   Returns a pointer to the created GLFW window object.
-; 
+;
 ; @params
 ;   None
 ;
