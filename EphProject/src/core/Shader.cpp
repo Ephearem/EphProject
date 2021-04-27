@@ -149,3 +149,158 @@ unsigned int Shader::get_id() const
 {
     return this->id_;
 }
+
+
+/**----------------------------------------------------------------------------
+; @func set_int
+;
+; @brief
+;   Specifies the value of a uniform variable of type int for the current
+;   program object.
+;
+; @params
+;   name    | Uniform variable name.
+;   value   | A new value for a uniform variable.
+;
+; @return
+;   None
+;
+----------------------------------------------------------------------------**/
+void Shader::set_int(std::string const& name, int value) const
+{
+    glUniform1i(this->get_uniform_location(name), value);
+}
+
+
+/**----------------------------------------------------------------------------
+; @func set_float
+;
+; @brief
+;   Specifies the value of a uniform variable of type float for the current
+;   program object.
+;
+; @params
+;   name    | Uniform variable name.
+;   value   | A new value for a uniform variable.
+;
+; @return
+;   None
+;
+----------------------------------------------------------------------------**/
+void Shader::set_float(std::string const& name, float value) const
+{
+    glUniform1f(this->get_uniform_location(name), value);
+}
+
+
+/**----------------------------------------------------------------------------
+; @func set_vec2
+;
+; @brief
+;   Specifies the value of a uniform variable of type glm::vec2 for the current
+;   program object.
+;
+; @params
+;   name    | Uniform variable name.
+;   value   | A new value for a uniform variable.
+;
+; @return
+;   None
+;
+----------------------------------------------------------------------------**/
+void Shader::set_vec2(std::string const& name, const glm::vec2& vec2) const
+{
+    glUniform2f(this->get_uniform_location(name), vec2.x, vec2.y);
+}
+
+
+/**----------------------------------------------------------------------------
+; @func set_ivec2
+;
+; @brief
+;   Specifies the value of a uniform variable of type glm::ivec2 for the
+;   current program object.
+;
+; @params
+;   name    | Uniform variable name.
+;   value   | A new value for a uniform variable.
+;
+; @return
+;   None
+;
+----------------------------------------------------------------------------**/
+void Shader::set_ivec2(std::string const& name, const glm::ivec2& ivec2) const
+{
+    glUniform2i(this->get_uniform_location(name), ivec2.x, ivec2.y);
+}
+
+
+/**----------------------------------------------------------------------------
+; @func set_vec4
+;
+; @brief
+;   Specifies the value of a uniform variable of type glm::vec4 for the current
+;   program object.
+;
+; @params
+;   name    | Uniform variable name.
+;   value   | A new value for a uniform variable.
+;
+; @return
+;   None
+;
+----------------------------------------------------------------------------**/
+void Shader::set_vec4(std::string const& name, const glm::vec4& vec4) const
+{
+    glUniform4f(this->get_uniform_location(name), vec4.x, vec4.y, vec4.z, vec4.w);
+}
+
+
+/**----------------------------------------------------------------------------
+; @func set_mat4
+;
+; @brief
+;   Specifies the value of a uniform variable of type glm::mat4 for the current
+;   program object.
+;
+; @params
+;   name    | Uniform variable name.
+;   value   | A new value for a uniform variable.
+;
+; @return
+;   None
+;
+----------------------------------------------------------------------------**/
+void Shader::set_mat4(std::string const& name, const glm::mat4& matrix) const
+{
+    glUniformMatrix4fv(this->get_uniform_location(name), 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+
+/**----------------------------------------------------------------------------
+; @func get_uniform_location
+;
+; @brief
+;   Returns the location of a uniform variable by its name.
+;   The first call to this function for each name gets the location using the
+;   'glGetUniformLocation' function and stores it in an unordered map, in which
+;   the key is the uniform name. The next calls to this function will not
+;   access the GPU (i.e. will not call 'glGetUniformLocation'), but will return
+;   the value from the map. This reduces the execution time of the function.
+;
+; @params
+;   name    | Uniform variable name.
+;
+; @return
+;   int     | Uniform variable location.
+;
+----------------------------------------------------------------------------**/
+int Shader::get_uniform_location(std::string const& name) const
+{
+    auto i = this->uniform_locations_.find(name);
+    if (i != this->uniform_locations_.end())
+        return i->second;
+    int uniform_location = glGetUniformLocation(this->id_, name.c_str());
+    this->uniform_locations_[name] = uniform_location;
+    return uniform_location;
+}
