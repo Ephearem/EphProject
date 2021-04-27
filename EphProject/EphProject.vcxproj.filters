@@ -42,4 +42,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\core\shaders\default_vertex.shader" />
+    <None Include="src\core\shaders\default_fragment.shader" />
+  </ItemGroup>
 </Project>
