@@ -34,12 +34,13 @@ public:
 
     void init_window(char const* window_title, glm::ivec2 const& window_size,
                      bool is_full_screen, int swap_interval);
-
+    void start_main_loop(void(*main_loop_iteration_func)());
     GLFWwindow* get_window_ptr() const;
 
 private:
     GLFWwindow* window_ptr_;
     glm::ivec2 window_size_;
+    void(*main_loop_iteration_func_)();
 
     Core();
     Core(const Core& root) = delete;
