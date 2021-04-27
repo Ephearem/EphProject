@@ -166,11 +166,13 @@
     <ClCompile Include="adds\GLAD\src\glad.c" />
     <ClCompile Include="src\core\Core.cpp" />
     <ClCompile Include="src\core\Log.cpp" />
+    <ClCompile Include="src\core\Shader.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\Core.hpp" />
     <ClInclude Include="src\core\Log.hpp" />
+    <ClInclude Include="src\core\Shader.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
