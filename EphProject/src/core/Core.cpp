@@ -13,12 +13,15 @@
 
 /** @includes  -------------------------------------------------------------**/
 
+#include <fstream>
+#include <sstream>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include "Core.hpp"
 #include "Log.hpp"
-
+#include "Shader.hpp"
 
 
 /** @functions  ------------------------------------------------------------**/
@@ -104,6 +107,82 @@ void Core::init_window(char const* window_title, glm::ivec2 const& window_size,
 
 
 /**----------------------------------------------------------------------------
+; @func init_shaders
+;
+; @brief
+;   Reads the contents of the vertex and fragment shader files and passes it to
+;   the constructor of the 'Shader' class. Binds the created shader.
+;   For more details, see the description of the 'Shader' class constructor.
+; 
+; @params
+;   vertex_shader_file_path   | Zero-terminated vertex shader source string.
+;   fragment_shader_file_path | Zero-terminated fragment shader source string.
+;
+; @return
+;   None
+;
+; // TODO: create a separate class for working with files.
+;
+----------------------------------------------------------------------------**/
+void Core::init_shaders(const char* vertex_shader_file_path,
+                        const char* fragment_shader_file_path)
+{
+    std::ifstream vertex_shader_file;
+    std::ifstream fragment_shader_file;
+    std::stringstream vertex_shader_lines;
+    std::stringstream fragment_shader_lines;
+
+    vertex_shader_file.exceptions(std::ifstream::failbit |
+        std::ifstream::badbit);         /* Set exception mask to detect      */
+                                        /* failbit and badbit errors while   */
+                                        /* opening a vertex shader file      */
+    fragment_shader_file.exceptions(std::ifstream::failbit |
+        std::ifstream::badbit);         /* Set exception mask to detect      */
+                                        /* failbit and badbit errors while   */
+                                        /* opening a fragment shader file    */
+    try
+    {
+        vertex_shader_file.open(vertex_shader_file_path);
+                                        /* Open vertex shader file           */
+        vertex_shader_lines << vertex_shader_file.rdbuf();
+                                        /* Read vertex shader file's buffer  */
+                                        /* Content into stream               */
+        vertex_shader_file.close();     /* Close vertex shader file handler  */
+    }
+    catch (std::ifstream::failure& e)
+    {
+        std::string error_msg = "Failed to read a file: " +
+            std::string(vertex_shader_file_path) + ". Error code: " +
+            std::to_string(e.code().value()) +  ". " + std::string(e.what());
+        LOG_ERROR(error_msg.c_str());
+    }
+    try
+    {
+        fragment_shader_file.open(fragment_shader_file_path);
+                                        /* Open fragment shader file         */
+        fragment_shader_lines << fragment_shader_file.rdbuf();
+                                        /* Read fragment shader file's       */
+                                        /* buffer                            */
+        fragment_shader_file.close();   /* Close fragment shader file        */
+                                        /* handler                           */
+    }
+    catch (std::ifstream::failure& e)
+    {
+        std::string error_msg = "Failed to read a file: " +
+            std::string(vertex_shader_file_path) + ". Error code: " +
+            std::to_string(e.code().value()) + ". " + std::string(e.what());
+        LOG_ERROR(error_msg.c_str());
+    }
+    this->shader_ptr_ = new Shader(vertex_shader_lines.str().c_str(),
+        fragment_shader_lines.str().c_str());
+                                        /* Convert stream into c-string and  */
+                                        /* pass them to the constructor of   */
+                                        /* 'Shader' class                    */
+    this->shader_ptr_->use();           /* Bind created shader               */
+}
+
+
+/**----------------------------------------------------------------------------
 ; @func start_main_loop
 ;
 ; @brief
@@ -131,15 +210,15 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
     while (!glfwWindowShouldClose(this->window_ptr_))
     {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-                                        /* Specify clear values for the      */
-                                        /* color buffer                      */
+        /* Specify clear values for the      */
+        /* color buffer                      */
         glClear(GL_COLOR_BUFFER_BIT);   /* Clear the 'GL_COLOR_BUFFER_BIT'   */
                                         /* buffer using the selected color   */
 
         main_loop_iteration_func();     /* Call a custom callback            */
 
         glfwSwapBuffers(this->window_ptr_);
-                                        /* Swap the front and back buffers   */
+        /* Swap the front and back buffers   */
         glfwPollEvents();               /* Process all pending events        */
     }
     glfwTerminate();                    /* Destroy all windows, free         */
@@ -180,6 +259,7 @@ GLFWwindow* Core::get_window_ptr() const
 ;
 ----------------------------------------------------------------------------**/
 Core::Core()
-    :window_ptr_(nullptr), window_size_(0), main_loop_iteration_func_(nullptr)
+    :window_ptr_(nullptr), window_size_(0), shader_ptr_(nullptr),
+    main_loop_iteration_func_(nullptr)
 {
 }
