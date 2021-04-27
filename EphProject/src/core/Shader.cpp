@@ -2,7 +2,7 @@
 ; @file Shader.cpp
 ;
 ; @brief
-;   // TODO: 
+;   The file implements the functionality of the 'Shader' class.
 ; 
 ; @date   April 2021
 ; @author Eph
