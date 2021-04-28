@@ -23,6 +23,7 @@
 #include "Log.hpp"
 #include "Shader.hpp"
 #include "Image.hpp"
+#include "Texture2dArray.hpp"
 
 
 
@@ -286,31 +287,8 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
     glBindVertexArray(vertex_array);
 
 
-    
-    unsigned int texture_2d_array;
-    glGenTextures(1, &texture_2d_array);
-                                        /* Generate a 2d texture array       */
-                                        /* object                            */
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, texture_2d_array);
-                                        /* Set 'texture_2d_array' as the     */
-                                        /* current vertex array object.      */
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage3D(
-        GL_TEXTURE_2D_ARRAY,            /* target to which the texture is    */
-                                        /* bound                             */
-        0,                              /* level                             */
-        GL_RGBA8,                       /* Internal format                   */
-        static_cast<GLsizei>(512),      /* Width of the 2d texture array     */
-        static_cast<GLsizei>(512),      /* Heigh of the 2d texture array     */
-        static_cast<GLsizei>(2),        /* Depth of the 2d texture array     */
-        0,                              /* Border, must be 0.                */
-        GL_RGBA,                        /* Format of the pixel data          */
-        GL_UNSIGNED_BYTE,               /* Data type of the pixel data       */
-        nullptr);                       /* A pointer to the image data       */
+    Texture2dArray texture_2d_array(512, 512, 2);
+    texture_2d_array.bind();
 
     Image img_1("res/img/512x512_transp.png");
     Image img_2("res/img/256x256.jpg");
@@ -344,11 +322,9 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
                                         /* A pointer to the image data       */
 
 
-                                        /* Add texture to the 1st layer of   */
+                                        /* Add texture to the 0th layer of   */
                                         /* the 2d texture array              */
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, texture_2d_array);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 256);
     glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
     glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
@@ -416,7 +392,6 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
     glDeleteVertexArrays(1, &vertex_array);
     glDeleteBuffers(1, &vertex_buffer);
     glDeleteBuffers(1, &indices_buffer);
-    glDeleteTextures(1, &texture_2d_array);
 
     // TODO: TEMPORARY CODE END
 
