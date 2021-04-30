@@ -24,6 +24,7 @@
 #include "Shader.hpp"
 #include "Image.hpp"
 #include "Texture2dArray.hpp"
+#include "Texture2dArrayLayer.hpp"
 
 
 
@@ -287,73 +288,24 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
     glBindVertexArray(vertex_array);
 
 
-    Texture2dArray texture_2d_array(512, 512, 2);
-    texture_2d_array.bind();
-
     Image img_1("res/img/512x512_transp.png");
     Image img_2("res/img/256x256.jpg");
 
-
-                                        /* Add texture to the 0th layer of   */
-                                        /* the 2d texture array              */
-
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 512);  
-                                        /* The full width of the image from  */
-                                        /* which the texture is created      */
-    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-                                        /* Subtexture x-offset (from the     */
-                                        /* beginning of the image).          */
-    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-                                        /* Subtexture y-offset (from the     */
-                                        /* beginning of the image).          */
-    glTexSubImage3D(
-        GL_TEXTURE_2D_ARRAY,            /* target to which the texture is    */
-                                        /* bound                             */
-        0,                              /* Level-of-detail. 0 - base image   */
-        0,                              /* x-offset within the texture array */
-        0,                              /* y offset within the texture array */
-        0,                              /* z offset (layer)                  */
-        static_cast<GLsizei>(256),      /* width of the texture subimage     */
-        static_cast<GLsizei>(512),      /* height of the texture subimage    */
-        1,                              /* depth of the texture subimage     */
-        GL_RGBA,                        /* Format of the pixel data          */
-        GL_UNSIGNED_BYTE,               /* Data type of the pixel data       */
-        static_cast<const void*>(img_1.get_data()));
-                                        /* A pointer to the image data       */
-
-
-                                        /* Add texture to the 0th layer of   */
-                                        /* the 2d texture array              */
-
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 256);
-    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-    glTexSubImage3D(
-        GL_TEXTURE_2D_ARRAY,
-        0,
-        256,
-        256,                            /* The offset is calculated from the */
-                                        /* bottom of the texture. For it to  */
-                                        /* be considered from the top, need  */
-                                        /* to swap the vertices related to   */
-                                        /* the texture in the 'vertices'     */
-                                        /* array.                            */
-        // TODO: Check out the comment posted above because I don't remember
-        // exactly :)
-        0,
-        static_cast<GLsizei>(256),
-        static_cast<GLsizei>(256),
-        1,
-        GL_RGB,                         /* There are only 3 channels in this */
-                                        /* .jpg image                        */
-        GL_UNSIGNED_BYTE,
-        static_cast<const void*>(img_2.get_data()));
+    Texture2dArray texture_2d_array(512, 512, 2);
+    Texture2dArrayLayer layer_0(&texture_2d_array, 0);
+    Texture2dArrayLayer layer_1(&texture_2d_array, 1);
+    layer_0.add_texture(0, 0, 128, 128, 0, 0, img_1.get_data(), 512, 512, 4);
+    layer_0.add_texture(140, 0, 256, 256, 0, 0, img_2.get_data(), 256, 256, 3);
+    layer_1.add_texture(384, 384, 128, 128, 384, 384, img_1.get_data(), 512,
+        512, 4);
+    texture_2d_array.bind();
 
     img_1.free();
     img_2.free();
 
-    shader_ptr_->set_int("uf_txd_array_z_offset", 0);
-    shader_ptr_->set_int("uf_txd_unit", 0);
+    shader_ptr_->set_int("uf_txd_unit", texture_2d_array.get_texture_unit() -
+        GL_TEXTURE0);                   /* Use a texture unit on which       */
+                                        /* 'texture_2d_array' is located     */
 
     // TODO: TEMPORARY CODE END
 
@@ -374,10 +326,14 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
         //       'main_loop_iteration_func'.
         // TEMPORARY CODE START
 
+        shader_ptr_->set_int("uf_txd_array_z_offset", layer_0.get_z_offset());
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                                        /* Draw the 0th layer of the txd arr */
+        shader_ptr_->set_int("uf_txd_array_z_offset", layer_1.get_z_offset());
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                                        /* Draw the 1st layer of the txd arr */
 
         // TODO: TEMPORARY CODE END
-
 
         main_loop_iteration_func();     /* Call a custom callback            */
 
