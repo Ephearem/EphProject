@@ -169,6 +169,7 @@
     <ClCompile Include="src\core\Log.cpp" />
     <ClCompile Include="src\core\Shader.cpp" />
     <ClCompile Include="src\core\Texture2dArray.cpp" />
+    <ClCompile Include="src\core\Texture2dArrayLayer.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -177,6 +178,7 @@
     <ClInclude Include="src\core\Log.hpp" />
     <ClInclude Include="src\core\Shader.hpp" />
     <ClInclude Include="src\core\Texture2dArray.hpp" />
+    <ClInclude Include="src\core\Texture2dArrayLayer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\core\shaders\default_fragment.shader" />
