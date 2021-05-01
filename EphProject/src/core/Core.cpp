@@ -74,6 +74,7 @@ void Core::init_window(char const* window_title, glm::ivec2 const& window_size,
 {
     GLFWmonitor* monitor_ptr = nullptr;
 
+    this->window_size_ = window_size;
     glfwInit();                         /* Initialize and configure GLFW     */
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -220,10 +221,10 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
 
     float vertices[] =                  /* Set up vertices and txd vertices  */
     {
-         0.5f,  0.5f, 1.0f, 1.0f,       /* Top right                         */
-         0.5f, -0.5f, 1.0f, 0.0f,       /* Bottom right                      */
-        -0.5f, -0.5f, 0.0f, 0.0f,       /* Bottom left                       */
-        -0.5f,  0.5f, 0.0f, 1.0f        /* Top left                          */
+         1.0f, 0.0f, 1.0f, 1.0f,        /* Top right                         */
+         1.0f, 1.0f, 1.0f, 0.0f,        /* Bottom right                      */
+         0.0f, 1.0f, 0.0f, 0.0f,        /* Bottom left                       */
+         0.0f, 0.0f, 0.0f, 1.0f         /* Top left                          */
     };
 
     unsigned int indices[] =            /* Set up indices                    */
@@ -295,14 +296,33 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
     Texture2dArrayLayer layer_0(&texture_2d_array, 0);
     Texture2dArrayLayer layer_1(&texture_2d_array, 1);
     layer_0.add_texture(0, 0, 128, 128, 0, 0, img_1.get_data(), 512, 512, 4);
-    layer_0.add_texture(140, 0, 256, 256, 0, 0, img_2.get_data(), 256, 256, 3);
-    layer_1.add_texture(384, 384, 128, 128, 384, 384, img_1.get_data(), 512,
+    layer_0.add_texture(384, 0, 128, 128, 384, 0, img_1.get_data(), 512, 512,
+        4);
+    layer_0.add_texture(0, 384, 128, 128, 0, 384, img_1.get_data(), 512, 512,
+        4);
+    layer_0.add_texture(384, 384, 128, 128, 384, 384, img_1.get_data(), 512,
         512, 4);
+    layer_0.add_texture(128, 128, 256, 256, 0, 0, img_2.get_data(), 256, 256,
+        3);
+
+    layer_1.add_texture(0, 0, 512, 512, 0, 0, img_1.get_data(), 512, 512, 4);
+
+
     texture_2d_array.bind();
 
     img_1.free();
     img_2.free();
 
+    glm::mat4 projection(1.0);
+    projection = glm::ortho(0.0f, static_cast<GLfloat>(this->window_size_.x),
+        static_cast<GLfloat>(this->window_size_.y), 0.0f, -0.1f, 0.1f);
+                                        /* Create a projection matrix based  */
+                                        /* on the size of the window         */
+    shader_ptr_->set_mat4("uf_projection", projection);
+                                        /* Set the value to the uniform      */
+    shader_ptr_->set_int("uf_txd_unit", texture_2d_array.get_texture_unit() -
+        GL_TEXTURE0);                   /* Use a texture unit on which       */
+                                        /* 'texture_2d_array' is located     */
     shader_ptr_->set_int("uf_txd_unit", texture_2d_array.get_texture_unit() -
         GL_TEXTURE0);                   /* Use a texture unit on which       */
                                         /* 'texture_2d_array' is located     */
@@ -326,9 +346,13 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
         //       'main_loop_iteration_func'.
         // TEMPORARY CODE START
 
+        this->shader_ptr_->set_vec2("uf_model_pos", (glm::vec2(0, 0)));
+        this->shader_ptr_->set_vec2("uf_model_size", (glm::vec2(512, 512)));
         shader_ptr_->set_int("uf_txd_array_z_offset", layer_0.get_z_offset());
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
                                         /* Draw the 0th layer of the txd arr */
+        this->shader_ptr_->set_vec2("uf_model_pos", (glm::vec2(512, 0)));
+        this->shader_ptr_->set_vec2("uf_model_size", (glm::vec2(256, 128)));
         shader_ptr_->set_int("uf_txd_array_z_offset", layer_1.get_z_offset());
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
                                         /* Draw the 1st layer of the txd arr */
