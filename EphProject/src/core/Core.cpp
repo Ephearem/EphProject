@@ -219,12 +219,20 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
     // TEMPORARY CODE START
 
 
-    float vertices[] =                  /* Set up vertices and txd vertices  */
+    float vertices[] =                  /* Set up vertices                   */
     {
-         1.0f, 0.0f, 1.0f, 1.0f,        /* Top right                         */
-         1.0f, 1.0f, 1.0f, 0.0f,        /* Bottom right                      */
-         0.0f, 1.0f, 0.0f, 0.0f,        /* Bottom left                       */
-         0.0f, 0.0f, 0.0f, 1.0f         /* Top left                          */
+         1.0f, 0.0f,                    /* Top right                         */
+         1.0f, 1.0f,                    /* Bottom right                      */
+         0.0f, 1.0f,                    /* Bottom left                       */
+         0.0f, 0.0f                     /* Top left                          */
+    };
+
+    float txd_vertices[] =              /* Set up texture vertices           */
+    {
+         1.0f, 1.0f,                    /* Top right                         */
+         1.0f, 0.0f,                    /* Bottom right                      */
+         0.0f, 0.0f,                    /* Bottom left                       */
+         0.0f, 1.0f                     /* Top left                          */
     };
 
     unsigned int indices[] =            /* Set up indices                    */
@@ -233,12 +241,16 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
         1, 2, 3                         /* The 2-nd triangle                 */
     };
     unsigned int vertex_buffer = 0;
+    unsigned int txd_vertex_buffer = 0;
     unsigned int indices_buffer = 0;
     unsigned int vertex_array = 0;
 
     glGenVertexArrays(1, &vertex_array);/* Generate a verex array object     */
     glGenBuffers(1, &vertex_buffer);    /* Generate a buffer object to store */
                                         /* the positions of the vertices     */
+    glGenBuffers(1, &txd_vertex_buffer);
+                                        /* Generate a buffer object to store */
+                                        /* the texture coordinates           */
     glGenBuffers(1, &indices_buffer);   /* Generate a buffer object to store */
                                         /* the vertex indices                */
     glBindVertexArray(vertex_array);    /* Set 'vertex_array' as the current */
@@ -254,6 +266,18 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
                                         /* Put data from 'vertices' into     */
                                         /* GL_ARRAY_BUFFER (i.e. into        */
                                         /* 'vertex_buffer')                  */
+    glBindBuffer(GL_ARRAY_BUFFER, txd_vertex_buffer);
+                                        /* Bind 'vertex_buffer' to           */
+                                        /* GL_ARRAY_BUFFER. All following    */
+                                        /* calls to GL_ARRAY_BUFFER will     */
+                                        /* refer to this 'vertex_buffer'     */
+                                        /* object.                           */
+    glBufferData(GL_ARRAY_BUFFER, sizeof(txd_vertices), txd_vertices,
+        GL_STATIC_DRAW);
+                                        /* Put data from 'txd_vertices' into */
+                                        /* GL_ARRAY_BUFFER (i.e. into        */
+                                        /* 'txd_vertex_buffer'               */
+
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices_buffer);
                                         /* Bind 'vertex_buffer' to           */
                                         /* GL_ELEMENT_ARRAY_BUFFER. All      */
@@ -264,18 +288,19 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
         GL_STATIC_DRAW);                /* Put data from 'indices' into      */
                                         /* GL_ELEMENT_ARRAY_BUFFER (i.e.     */
                                         /* into 'indices_buffer')            */
-    glBindVertexBuffer(0, vertex_buffer, 0, sizeof(GLfloat) * 4);
+    glBindVertexBuffer(0, vertex_buffer, 0, sizeof(GLfloat) * 2);
                                         /* Bind 'vertex_buffer' to           */
                                         /* 'vertex_array' at index 0.        */
-    glBindVertexBuffer(1, vertex_buffer, sizeof(GLfloat) * 2,
-        sizeof(GLfloat) * 4);           /* Bind 'vertex_buffer' to           */
+    glBindVertexBuffer(1, txd_vertex_buffer, 0, sizeof(GLfloat) * 2);
+                                        /* Bind 'txd_vertex_buffer' to       */
                                         /* 'vertex_array' at index 0.        */
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);   /* 'vertex_buffer' can be safely     */
-                                        /* unbind since it is bound to       */
+    glBindBuffer(GL_ARRAY_BUFFER, 0);   /* 'vertex_buffer' and               */
+                                        /* 'txd_vertex_buffer'can be unbound */
+                                        /* since they are bound to           */
                                         /* 'vertex_array' as the vertex      */
-                                        /* attribute at index 0.             */
+                                        /* attributes at indices 0 and 1     */
 
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
                                         /* 'indices_buffer' cannot be        */
@@ -371,6 +396,7 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
                                         /* De-allocate all resources         */
     glDeleteVertexArrays(1, &vertex_array);
     glDeleteBuffers(1, &vertex_buffer);
+    glDeleteBuffers(1, &txd_vertex_buffer);
     glDeleteBuffers(1, &indices_buffer);
 
     // TODO: TEMPORARY CODE END
