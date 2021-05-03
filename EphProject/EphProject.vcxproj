@@ -165,6 +165,7 @@
   <ItemGroup>
     <ClCompile Include="adds\GLAD\src\glad.c" />
     <ClCompile Include="src\core\Core.cpp" />
+    <ClCompile Include="src\core\IndicesData.cpp" />
     <ClCompile Include="src\core\Image.cpp" />
     <ClCompile Include="src\core\Log.cpp" />
     <ClCompile Include="src\core\Shader.cpp" />
@@ -175,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\Core.hpp" />
+    <ClInclude Include="src\core\IndicesData.hpp" />
     <ClInclude Include="src\core\Image.hpp" />
     <ClInclude Include="src\core\Log.hpp" />
     <ClInclude Include="src\core\Shader.hpp" />
