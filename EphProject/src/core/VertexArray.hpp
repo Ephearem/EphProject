@@ -10,10 +10,11 @@
 ;   objects needed to store renderable data (vertex buffer, texture vertices
 ;   buffer, indices buffer).
 ;
-;   Filling a vertex array with data is implemented in the 'add_textured_rect'
+;   Filling a vertex array with data is implemented in the 'add_textured_rects'
 ;   method and consists in adding vertices to the data required to build the
-;   vertex array and generating an array of indices corresponding to this
-;   vertices.
+;   vertex array, generating an array of indices corresponding to this
+;   vertices and creating an object of 'IndicesData' class that contains the
+;   data needed to draw the added rectangle.
 ;
 ;   Building of a vertex array is:
 ;       - filling in OpenGL buffer objects (vertices, texture vertices and)
@@ -32,9 +33,15 @@
 
 
 
-/** @includes  -------------------------------------------------------------**/
+/** @includes --------------------------------------------------------------**/
 
 #include <vector>
+
+
+
+/** @type_declarations -----------------------------------------------------**/
+
+class IndicesData;
 
 
 
@@ -45,7 +52,7 @@ class VertexArray
 public:
     VertexArray();
     ~VertexArray();
-    void add_textured_rect(std::vector<float> const& vertices,
+    IndicesData* add_textured_rects(std::vector<float> const& vertices,
                            std::vector<float> const& texture_vertices);
 
     void build();

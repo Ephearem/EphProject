@@ -11,15 +11,16 @@
 
 
 
-/** @includes  -------------------------------------------------------------**/
+/** @includes --------------------------------------------------------------**/
 
 #include <glad/glad.h>
 
 #include "VertexArray.hpp"
+#include "IndicesData.hpp"
 
 
 
-/** @functions  ------------------------------------------------------------**/
+/** @functions -------------------------------------------------------------**/
 
 /**----------------------------------------------------------------------------
 ; @func VertexArray
@@ -70,12 +71,14 @@ VertexArray::~VertexArray()
 
 
 /**----------------------------------------------------------------------------
-; @func add_textured_rect
+; @func add_textured_rects
 ;
 ; @brief
 ;   Adds vertices of a textured rectangle (or multiple rectangles) to the data
 ;   from which the vertex array will be constructed. Generates an array of
-;   indices corresponding to the received vertices.
+;   indices corresponding to the received vertices. Creates an object of
+;   'IndicesData' class that contains the data needed to draw the added
+;   rectangle.
 ;   For each textured rect, there are:
 ;    - 8 elements of a vertex array (i.e. 4 vertices of the rectangle, 2
 ;      coordinates (x, y) for each);
@@ -85,23 +88,34 @@ VertexArray::~VertexArray()
 ;      they are combined to create a rectangle).
 ;
 ; @params
-;   vertices            | Local coordinates of the vertices of the rectangle.
-;   texture_vertices    | The coordinates of the vertices of the texture.
+;   vertices           | Local coordinates of the vertices of the rectangle(s).
+;   texture_vertices   | The coordinates of the vertices of the texture.
 ;
 ; @return
-;   None
+;   IndicesData*    | Data for drawing the added rectangle(s) (using the
+;                   | 'glDrawElements' function).
 ;
 ; // TODO: Add a check of the sizes of incoming vectors for a multiple of
 ;          eight.
 ;
 ----------------------------------------------------------------------------**/
-void VertexArray::add_textured_rect(std::vector<float> const& vertices,
+IndicesData* VertexArray::add_textured_rects(
+    std::vector<float> const& vertices,
     std::vector<float> const& texture_vertices)
 {
     int rects_number = vertices.size() / 8;
                                         /* 4 points in 2d space (i.e. 8      */
                                         /* values) are used to describe one  */
                                         /* rectangle.                        */
+    int used_indices_items_number = rects_number * 6;
+                                        /* The number of elements used in    */
+                                        /* the 'indices_' array. 6 elements  */
+                                        /* per rectangle.                    */
+
+    int indices_offset = this->indices_.size() * sizeof(unsigned int);
+                                        /* Offset (in bytes) to the first    */
+                                        /* unused element of the 'indices_'  */
+                                        /* array.                            */
 
     this->vertices_.insert(this->vertices_.end(), vertices.begin(),
         vertices.end());                /* Store the received vertices       */
@@ -122,6 +136,9 @@ void VertexArray::add_textured_rect(std::vector<float> const& vertices,
         this->indices_.push_back(this->next_free_index_number_ + 3);
         this->next_free_index_number_ += 4;
     }
+                                        
+    return new IndicesData(GL_TRIANGLES, used_indices_items_number,
+        reinterpret_cast<void*>(indices_offset));
 }
 
 

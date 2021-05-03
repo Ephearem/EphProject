@@ -243,8 +243,8 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
          0.0f, 1.0f                     /* Top left                          */
     };
     VertexArray vertex_array;
-    vertex_array.add_textured_rect(vertices, txd_vertices);
-    vertex_array.add_textured_rect(vertices_2, txd_vertices);
+    vertex_array.add_textured_rects(vertices, txd_vertices);
+    vertex_array.add_textured_rects(vertices_2, txd_vertices);
     vertex_array.build();
     vertex_array.bind();
     
