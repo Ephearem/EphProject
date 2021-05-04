@@ -33,7 +33,7 @@ class Texture2dArrayLayer
 public:
     Texture2dArrayLayer(Texture2dArray* texture_2d_array_ptr, int z_offset);
 
-    void add_texture(int subtexture_x_offset, int subtexture_y_offset,
+    void add_subimage(int subtexture_x_offset, int subtexture_y_offset,
         int subtexture_width, int subtexture_hight,
         int img_x_offset, int img_y_offset,
         unsigned char const* img_bytes, int img_width, int img_height,

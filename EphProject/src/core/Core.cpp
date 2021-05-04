@@ -298,17 +298,17 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
     Texture2dArray texture_2d_array(512, 512, 2);
     Texture2dArrayLayer layer_0(&texture_2d_array, 0);
     Texture2dArrayLayer layer_1(&texture_2d_array, 1);
-    layer_0.add_texture(0, 0, 128, 128, 0, 0, img_1.get_data(), 512, 512, 4);
-    layer_0.add_texture(384, 0, 128, 128, 384, 0, img_1.get_data(), 512, 512,
+    layer_0.add_subimage(0, 0, 128, 128, 0, 0, img_1.get_data(), 512, 512, 4);
+    layer_0.add_subimage(384, 0, 128, 128, 384, 0, img_1.get_data(), 512, 512,
         4);
-    layer_0.add_texture(0, 384, 128, 128, 0, 384, img_1.get_data(), 512, 512,
+    layer_0.add_subimage(0, 384, 128, 128, 0, 384, img_1.get_data(), 512, 512,
         4);
-    layer_0.add_texture(384, 384, 128, 128, 384, 384, img_1.get_data(), 512,
+    layer_0.add_subimage(384, 384, 128, 128, 384, 384, img_1.get_data(), 512,
         512, 4);
-    layer_0.add_texture(128, 128, 256, 256, 0, 0, img_2.get_data(), 256, 256,
+    layer_0.add_subimage(128, 128, 256, 256, 0, 0, img_2.get_data(), 256, 256,
         3);
 
-    layer_1.add_texture(0, 0, 512, 512, 0, 0, img_1.get_data(), 512, 512, 4);
+    layer_1.add_subimage(0, 0, 512, 512, 0, 0, img_1.get_data(), 512, 512, 4);
 
     texture_2d_array.bind();
 

@@ -43,7 +43,7 @@ Texture2dArrayLayer::Texture2dArrayLayer(Texture2dArray* texture_2d_array_ptr,
 
 
 /**----------------------------------------------------------------------------
-; @func add_texture
+; @func add_subimage
 ;
 ; @brief
 ;   Loads an image (or subimage) onto a 2d texture array layer
@@ -66,7 +66,7 @@ Texture2dArrayLayer::Texture2dArrayLayer(Texture2dArray* texture_2d_array_ptr,
 ; // TODO: Check if the sub-texture fits on the layer.
 ;
 ----------------------------------------------------------------------------**/
-void Texture2dArrayLayer::add_texture(int subtexture_x_offset,
+void Texture2dArrayLayer::add_subimage(int subtexture_x_offset,
     int subtexture_y_offset,
     int subtexture_width,
     int subtexture_hight,
@@ -75,6 +75,15 @@ void Texture2dArrayLayer::add_texture(int subtexture_x_offset,
     int img_width, int img_height,
     int img_channels_count_)
 {
+    if (((subtexture_x_offset + subtexture_width) >
+        this->get_texture_2d_array()->get_width()) ||
+        ((subtexture_y_offset + subtexture_hight) >
+            this->get_texture_2d_array()->get_height())
+        )
+    {
+        LOG_ERROR("")
+    }
+
 
     GLenum format = 0;
     switch (img_channels_count_)
