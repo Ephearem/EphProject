@@ -27,6 +27,7 @@
 #include "Texture2dArray.hpp"
 #include "Texture2dArrayLayer.hpp"
 #include "VertexArray.hpp"
+#include "IndicesData.hpp"
 
 
 
@@ -220,36 +221,77 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
     //       called outside of the methods of this class.
     // TEMPORARY CODE START
 
+    IndicesData* indices_data_1 = nullptr;
+                                        /* The 1-st composition's indices    */
 
-    std::vector<float> vertices =       /* Set up vertices                   */
+    IndicesData* indices_data_2 = nullptr;   
+                                        /* The 2-nd composition's indices    */
+
+    VertexArray vertex_array;
+
+    std::vector<float> vertices_1 =     /* The 1-st composition's vertices   */
     {
          1.0f, 0.0f,                    /* Top right                         */
          1.0f, 1.0f,                    /* Bottom right                      */
          0.0f, 1.0f,                    /* Bottom left                       */
          0.0f, 0.0f                     /* Top left                          */
     };
-    std::vector<float> vertices_2 =
-    {
-         1.0f, 0.5f,                    /* Top right                         */
-         1.0f, 1.0f,                    /* Bottom right                      */
-         0.5f, 1.0f,                    /* Bottom left                       */
-         0.5f, 0.5f                     /* Top left                          */
-    };
-    std::vector<float> txd_vertices =   /* Set up texture vertices           */
+    std::vector<float> txd_vertices_1 = /* The 1st composition's txd vert.   */
     {
          1.0f, 1.0f,                    /* Top right                         */
          1.0f, 0.0f,                    /* Bottom right                      */
          0.0f, 0.0f,                    /* Bottom left                       */
          0.0f, 1.0f                     /* Top left                          */
     };
-    VertexArray vertex_array;
-    vertex_array.add_textured_rects(vertices, txd_vertices);
-    vertex_array.add_textured_rects(vertices_2, txd_vertices);
-    vertex_array.build();
+
+    std::vector<float> vertices_2 =     /* The 2nd composition's vertices    */
+    {
+         0.75f, 0.0f,                   /*   _________  Something like that  */
+         0.75f, 0.75f,                  /*  |    1    |                      */
+         0.0f, 0.75f,                   /*  |       __|______                */
+         0.0f, 0.0f,                    /*  |      |  | 2    |               */
+         1.0f, 0.25f,                   /*  |      |  |      |               */
+         1.0f, 1.0f,                    /*  |______|__|      |               */
+         0.25f, 1.0f,                   /*         |         |               */
+         0.25f, 0.25f                   /*         |_________|               */
+    };
+    std::vector<float> txd_vertices_2 = /* The 2nd composition's txd vert.   */
+    {
+         0.5f, 0.5f,                    /* The 1-st rect's texture vertices  */
+         0.5f, 0.0f,
+         0.0f, 0.0f,
+         0.0f, 0.5f,
+         0.5f, 1.0f,                    /* The 2-nd rect's texture vertices  */
+         0.5f, 0.75f,
+         0.25f, 0.75f,
+         0.25f, 1.0f
+    };
+    indices_data_1 = vertex_array.add_textured_rects(vertices_1,
+        txd_vertices_1);                /* Pass the 1-st composition's       */
+                                        /* vertices ('vertices_1') and       */
+                                        /* texture vertices                  */
+                                        /* ('txd_vertices_1') to the         */
+                                        /* 'vertex_array' for further        */
+                                        /* sending to the GPU                */
+
+    indices_data_2 = vertex_array.add_textured_rects(vertices_2,
+        txd_vertices_2);                /* Do the same for the 2-nd          */
+                                        /* composition                       */
+
+                                        /* Now 'indices_1' and 'indices_2'   */
+                                        /* contain indices data. In the main */
+                                        /* loop, these objects will be used  */
+                                        /* to draw the first and the second  */
+                                        /* composition using the             */
+                                        /* 'glDrawElements' function.        */
+    
+    vertex_array.build();               /* Build a vertex array in the GPU   */
+                                        /* using the vertices and texture    */
+                                        /* vertices data passed to           */
+                                        /* 'add_textured_rects' above        */
+
     vertex_array.bind();
     
-
-
     Image img_1("res/img/512x512_transp.png");
     Image img_2("res/img/256x256.jpg");
 
@@ -268,7 +310,6 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
 
     layer_1.add_texture(0, 0, 512, 512, 0, 0, img_1.get_data(), 512, 512, 4);
 
-
     texture_2d_array.bind();
 
     img_1.free();
@@ -281,9 +322,11 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
                                         /* on the size of the window         */
     shader_ptr_->set_mat4("uf_projection", projection);
                                         /* Set the value to the uniform      */
+
     shader_ptr_->set_int("uf_txd_unit", texture_2d_array.get_texture_unit() -
         GL_TEXTURE0);                   /* Use a texture unit on which       */
                                         /* 'texture_2d_array' is located     */
+
     shader_ptr_->set_int("uf_txd_unit", texture_2d_array.get_texture_unit() -
         GL_TEXTURE0);                   /* Use a texture unit on which       */
                                         /* 'texture_2d_array' is located     */
@@ -310,15 +353,20 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
         this->shader_ptr_->set_vec2("uf_model_pos", (glm::vec2(0, 0)));
         this->shader_ptr_->set_vec2("uf_model_size", (glm::vec2(512, 512)));
         shader_ptr_->set_int("uf_txd_array_z_offset", layer_0.get_z_offset());
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-                                        /* Draw the 0th layer of the txd arr */
+        glDrawElements(indices_data_1->mode_, indices_data_1->count_,
+            GL_UNSIGNED_INT, indices_data_1->offset_);
+                                        /* Draw the 0th layer of the txd     */
+                                        /* array using the vertices of the   */
+                                        /* 1st composition                   */
 
         this->shader_ptr_->set_vec2("uf_model_pos", (glm::vec2(512, 0)));
         this->shader_ptr_->set_vec2("uf_model_size", (glm::vec2(256, 128)));
         shader_ptr_->set_int("uf_txd_array_z_offset", layer_1.get_z_offset());
-        glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
-                                        /* Draw 2 rectangles of the 1st      */
-                                        /* layer of the texture array        */
+        glDrawElements(indices_data_2->mode_, indices_data_2->count_,
+            GL_UNSIGNED_INT, indices_data_2->offset_);
+                                        /* Draw the 1st layer of the txd     */
+                                        /* array using the vertices of the   */
+                                        /* 2nd composition                   */
 
         // TODO: TEMPORARY CODE END
 
