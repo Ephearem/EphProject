@@ -18,6 +18,8 @@
 ;
 ----------------------------------------------------------------------------**/
 
+#pragma once
+
 
 
 /** @classes ---------------------------------------------------------------**/
@@ -27,8 +29,8 @@ class IndicesData
 public:
     IndicesData(unsigned int mode, unsigned int count, void* offset);
 
-    const unsigned int mode_;           /* Vertices connection mode          */
-    const unsigned int count_;          /* Number of elements to be rendered */
-    const void* offset_;                /* Offset to the first index of      */
+    const unsigned int mode;            /* Vertices connection mode          */
+    const unsigned int count;           /* Number of elements to be rendered */
+    const void* offset;                 /* Offset to the first index of      */
                                         /* shape(s)                          */
 };

@@ -36,6 +36,6 @@
 ;
 ----------------------------------------------------------------------------**/
 IndicesData::IndicesData(unsigned int mode, unsigned int count, void* offset)
-    :mode_(mode), count_(count), offset_(offset)
+    :mode(mode), count(count), offset(offset)
 {
 }

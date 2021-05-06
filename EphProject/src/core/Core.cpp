@@ -353,8 +353,8 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
         this->shader_ptr_->set_vec2("uf_model_pos", (glm::vec2(0, 0)));
         this->shader_ptr_->set_vec2("uf_model_size", (glm::vec2(512, 512)));
         shader_ptr_->set_int("uf_txd_array_z_offset", layer_0.get_z_offset());
-        glDrawElements(indices_data_1->mode_, indices_data_1->count_,
-            GL_UNSIGNED_INT, indices_data_1->offset_);
+        glDrawElements(indices_data_1->mode, indices_data_1->count,
+            GL_UNSIGNED_INT, indices_data_1->offset);
                                         /* Draw the 0th layer of the txd     */
                                         /* array using the vertices of the   */
                                         /* 1st composition                   */
@@ -362,8 +362,8 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
         this->shader_ptr_->set_vec2("uf_model_pos", (glm::vec2(512, 0)));
         this->shader_ptr_->set_vec2("uf_model_size", (glm::vec2(256, 128)));
         shader_ptr_->set_int("uf_txd_array_z_offset", layer_1.get_z_offset());
-        glDrawElements(indices_data_2->mode_, indices_data_2->count_,
-            GL_UNSIGNED_INT, indices_data_2->offset_);
+        glDrawElements(indices_data_2->mode, indices_data_2->count,
+            GL_UNSIGNED_INT, indices_data_2->offset);
                                         /* Draw the 1st layer of the txd     */
                                         /* array using the vertices of the   */
                                         /* 2nd composition                   */
