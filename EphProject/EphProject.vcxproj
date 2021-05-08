@@ -168,6 +168,7 @@
     <ClCompile Include="src\core\IndicesData.cpp" />
     <ClCompile Include="src\core\Image.cpp" />
     <ClCompile Include="src\core\Log.cpp" />
+    <ClCompile Include="src\core\Renderer.cpp" />
     <ClCompile Include="src\core\Shader.cpp" />
     <ClCompile Include="src\core\Sprite.cpp" />
     <ClCompile Include="src\core\Texture2dArray.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="src\core\IndicesData.hpp" />
     <ClInclude Include="src\core\Image.hpp" />
     <ClInclude Include="src\core\Log.hpp" />
+    <ClInclude Include="src\core\Renderer.hpp" />
     <ClInclude Include="src\core\Shader.hpp" />
     <ClInclude Include="src\core\Sprite.hpp" />
     <ClInclude Include="src\core\Texture2dArray.hpp" />

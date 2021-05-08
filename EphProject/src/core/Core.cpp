@@ -28,6 +28,8 @@
 #include "Texture2dArrayLayer.hpp"
 #include "VertexArray.hpp"
 #include "IndicesData.hpp"
+#include "Sprite.hpp"
+#include "Renderer.hpp"
 
 
 
@@ -315,21 +317,10 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
     img_1.free();
     img_2.free();
 
-    glm::mat4 projection(1.0);
-    projection = glm::ortho(0.0f, static_cast<GLfloat>(this->window_size_.x),
-        static_cast<GLfloat>(this->window_size_.y), 0.0f, -0.1f, 0.1f);
-                                        /* Create a projection matrix based  */
-                                        /* on the size of the window         */
-    shader_ptr_->set_mat4("uf_projection", projection);
-                                        /* Set the value to the uniform      */
-
-    shader_ptr_->set_int("uf_txd_unit", texture_2d_array.get_texture_unit() -
-        GL_TEXTURE0);                   /* Use a texture unit on which       */
-                                        /* 'texture_2d_array' is located     */
-
-    shader_ptr_->set_int("uf_txd_unit", texture_2d_array.get_texture_unit() -
-        GL_TEXTURE0);                   /* Use a texture unit on which       */
-                                        /* 'texture_2d_array' is located     */
+    Sprite sprite_1(indices_data_1, &layer_0);
+    Sprite sprite_2(indices_data_2, &layer_1);
+    Renderer renderer(this->shader_ptr_, this->window_size_);
+                                        /* Init renderer                     */
 
     // TODO: TEMPORARY CODE END
 
@@ -350,23 +341,13 @@ void Core::start_main_loop(void(*main_loop_iteration_func)())
         //       'main_loop_iteration_func'.
         // TEMPORARY CODE START
 
-        this->shader_ptr_->set_vec2("uf_model_pos", (glm::vec2(0, 0)));
-        this->shader_ptr_->set_vec2("uf_model_size", (glm::vec2(512, 512)));
-        shader_ptr_->set_int("uf_txd_array_z_offset", layer_0.get_z_offset());
-        glDrawElements(indices_data_1->mode, indices_data_1->count,
-            GL_UNSIGNED_INT, indices_data_1->offset);
-                                        /* Draw the 0th layer of the txd     */
-                                        /* array using the vertices of the   */
-                                        /* 1st composition                   */
+        renderer.draw_sprite(&sprite_1, { 0,0 }, { 256,256 });
+                                        /* Draw the 1-st sprite              */ 
+        renderer.draw_sprite(&sprite_2, { 260,50 }, { 512,512 });
+                                        /* Draw the 2-nd sprite              */
+        renderer.draw_sprite(&sprite_2, { 20,300 }, { 200,200 });
+                                        /* Draw the 2-nd sprite again        */
 
-        this->shader_ptr_->set_vec2("uf_model_pos", (glm::vec2(512, 0)));
-        this->shader_ptr_->set_vec2("uf_model_size", (glm::vec2(256, 128)));
-        shader_ptr_->set_int("uf_txd_array_z_offset", layer_1.get_z_offset());
-        glDrawElements(indices_data_2->mode, indices_data_2->count,
-            GL_UNSIGNED_INT, indices_data_2->offset);
-                                        /* Draw the 1st layer of the txd     */
-                                        /* array using the vertices of the   */
-                                        /* 2nd composition                   */
 
         // TODO: TEMPORARY CODE END
 
